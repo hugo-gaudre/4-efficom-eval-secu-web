@@ -25,7 +25,7 @@ const create = async (req, res, next) => {
     try {
         let result = await User.create({
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 4),
+            password: bcrypt.hashSync(req.body.password, 12),
             roles: [member.id]
         });
         res.status(201).json(result);
@@ -68,4 +68,4 @@ const removeRole = async (req, res, next) => {
     }
 }
 
-module.exports = { getAll, create, getById, update, remove, addRole, removeRole };
+module.exports = { getAll, create, getById, update, remove };

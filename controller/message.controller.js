@@ -1,18 +1,27 @@
 const Message = require('../model/role.schema.js');
 
 const getAll = (req, res, next) => {
-    let result = Role.findAll();
-    res.status(200).json(result);
+    try {
+        let result = Role.findAll();
+        res.status(200).json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 }
 
 
 const getById = async (req, res, next) => {
-    let result = await Message.findOne({
-        where: {
-            id: req.params.id
-        }
-    });
-    res.status(200).json(result);
+    try {
+        let result = await Message.findOne({
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(200).json(result);
+    }
+    catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 }
 
 const create = async (req, res, next) => {
@@ -27,13 +36,21 @@ const create = async (req, res, next) => {
 }
 
 const update = (req, res, next) => {
-    let result = Message.updateOne(req.body, { id: req.params.id });
-    res.status(201).json(result);
+    try {
+        let result = Message.updateOne(req.body, { id: req.params.id });
+        res.status(201).json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 }
 
 const remove = (req, res, next) => {
-    let result = Message.remove(req.params.id);
-    res.status(200).json(result);
+    try {
+        let result = Message.remove(req.params.id);
+        res.status(200).json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 }
 
 module.exports = { getAll, create, getById, update, remove };

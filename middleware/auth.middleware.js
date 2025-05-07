@@ -3,9 +3,13 @@ const Role = require('../model/role.schema.js');
 
 const auth = (role) => {
     return (req, res, next) => {
-        const token = req.headers.authorization?.split(" ")[1];
+        const authentificateHeader = req.headers.authorization;
+        if (!authentificateHeader || !authentificateHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: "Authentification nécessaire" });
+        }
+        const token = authentificateHeader.split(" ")[1];
         try {
-            req.payload = jwt.verify(token, "ZXZhbCBzZWN1IHdlYg==");
+            req.payload = jwt.verify(token, JWT_KEY);
             const roleToCheck = Role.getByName(role);
             if(role && req.payload.roles && !req.payload.roles.includes(roleToCheck.id)){
                 return res.status(403).json({message: "Vous n'avez pas les droits pour réaliser cette action"});
