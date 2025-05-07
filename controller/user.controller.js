@@ -2,19 +2,31 @@ const User = require('./../model/user.schema.js');
 const Role = require('../model/role.schema.js');
 const bcrypt = require('bcrypt');
 
-const getAll = (req, res, next) => {
-    let result = User.findAll();
-    res.status(200).json(result);
+const getAll = async (req, res, next) => {
+    try {
+        let result = await User.findAll({
+            attributes: ['id', 'email'] 
+        });
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Erreur lors de la récupération des utilisateurs" });
+    }
 }
 
-
 const getById = async (req, res, next) => {
-    let result = await User.findOne({
-        where: {
-            id: req.params.id
-        }
-    });
-    res.status(200).json(result);
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: "ID pas valide" });
+        let result = await User.findOne({
+            where: { id },
+            attributes: ['id', 'email']
+        });
+        
+        if (!result) return res.status(404).json({ message: "Utilisateur non trouvé" });
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Erreur lors de la récupération de l'utilisateur" });
+    }
 }
 
 const create = async (req, res, next) => {
@@ -28,7 +40,7 @@ const create = async (req, res, next) => {
             password: bcrypt.hashSync(req.body.password, 12),
             roles: [member.id]
         });
-        res.status(201).json(result);
+        res.status(201).json({ id: result.id, email: result.email });
     } catch (e) {
         res.status(400).json({ error: e.message });
     }
